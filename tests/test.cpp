@@ -1,14 +1,12 @@
 #include <common.h>
 
-#define BOOST_TEST_MODULE test_main
+#include <gtest/gtest.h>
 
-#include <boost/test/unit_test.hpp>
+using namespace testing;
 
-BOOST_AUTO_TEST_SUITE(test_suite_main)
+TEST(main_case, test_version_valid) { ASSERT_STRNE(version(), "0"); }
 
-BOOST_AUTO_TEST_CASE(test_version_valid)
-{
-	BOOST_CHECK( version() > 0 );
+int main(int argc, char **argv) {
+  InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
-
-BOOST_AUTO_TEST_SUITE_END()

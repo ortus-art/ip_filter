@@ -13,9 +13,17 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - lcov
-    - libboost-test-dev
+    - libgtest-dev
     - cmake-data
     - cmake
+install:
+  # gtest workaround - compile library
+   - cd /usr/src/gtest
+   - sudo cmake .
+   - sudo make
+   - sudo mv libgtest* /usr/lib/
+   - cd "${TRAVIS_BUILD_DIR}"
+# -- workaround end
 script:
 - cd ${TRAVIS_BUILD_DIR}
 - mkdir release_build
