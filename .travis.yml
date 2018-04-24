@@ -18,6 +18,7 @@ addons:
     - cmake-data
     - cmake
     - libboost-dev
+    - g++-7
 before_install:
     - eval "${MATRIX_EVAL}"
 install:
