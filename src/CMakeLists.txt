@@ -7,6 +7,9 @@ set(PROJECT_LIB ${PROJECT_NAME}_lib)
 set(ip_filter_lib_src
     common.h
     common.cpp
+    parse_exception.h
+    ip_filter.h
+    ip_filter.cpp
 )
 
 #Create a static library that is shared between main application and tests
