@@ -16,6 +16,7 @@ addons:
     - libgtest-dev
     - cmake-data
     - cmake
+    - libboost-dev
 install:
   # gtest workaround - compile library
    - cd /usr/src/gtest
