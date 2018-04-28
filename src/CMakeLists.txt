@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 
-configure_file(version.h.in version.h)
-
 set(PROJECT_LIB ${PROJECT_NAME}_lib)
 
 set(ip_filter_lib_src
-    common.h
-    common.cpp
     parse_exception.h
     ip_filter.h
     ip_filter.cpp

@@ -1,6 +1,5 @@
 #include <iostream>
 
-#include "common.h"
 #include "ip_filter.h"
 
 using namespace std;

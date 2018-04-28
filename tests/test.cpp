@@ -1,4 +1,3 @@
-#include <common.h>
 #include <ip_filter.h>
 
 #include <gtest/gtest.h>
@@ -8,10 +7,6 @@
 
 using namespace testing;
 
-TEST(main_case, test_version_valid)
-{
-    ASSERT_STRNE(version(), "0");
-}
 TEST(main_case, split_on_tab)
 {
     std::string test("test\ttest");
