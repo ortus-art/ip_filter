@@ -1,9 +1,11 @@
 #include <ip_filter.h>
 
 #include <gtest/gtest.h>
+#include <openssl/md5.h>
 
 #include <string>
 #include <sstream>
+#include <fstream>
 
 using namespace testing;
 
@@ -117,6 +119,29 @@ TEST(main_case, input_parse)
 
 }
 
+TEST(main_case, input_remove_duplicates)
+{
+    std::istringstream is(
+    "113.162.145.15\t111\t0\n"
+    "157.39.22.224\t5\t6\n"
+    "79.180.73.190\t2\t1\n"
+    "79.180.73.190\t2\t1\n"
+    "79.180.73.190\t2\t1\n"
+    "179.210.145.4\t22\t0\n"
+    "113.162.145.15\t111\t0\n");
+
+    std::ostringstream os;
+
+    ip_filter::parse_and_print(is, os, os);
+    ASSERT_EQ(os.str(),
+               "179.210.145.4\n"
+               "157.39.22.224\n"
+               "113.162.145.15\n"
+               "79.180.73.190\n"
+              );
+
+}
+
 TEST(main_case, input_bad)
 {
      std::istringstream is(
@@ -155,6 +180,31 @@ TEST(main_case, parse_and_print)
                "79.180.73.190\n"
               );
 }
+
+#ifdef PROJECT_SOURCE_DIR
+TEST(main_case, input_test_file)
+{
+    std::ifstream file{PROJECT_SOURCE_DIR "/data/data.tsv"};
+    std::ostringstream os, os_result;
+    ip_filter::parse_and_print(file, os, os);
+
+    unsigned char result[MD5_DIGEST_LENGTH];
+    auto out =  os.str();
+    MD5((const unsigned char*)out.c_str(), out.size(), result);
+
+    os_result<<std::hex<<std::setfill('0');
+    for(long long c: result)
+    {
+        os_result<<std::setw(2)<<(long long)c;
+    }
+
+    ASSERT_EQ(os_result.str(),
+               "37a9ee52ffb12c9ffcc961fae39d12b3"
+              );
+}
+#endif
+
+
 
 
 int main(int argc, char **argv) {

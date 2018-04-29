@@ -11,6 +11,7 @@ set(THREADS_PREFER_PTHREAD_FLAG TRUE)
 
 find_package(GTest REQUIRED)
 find_package(Threads REQUIRED)
+find_package(OpenSSL REQUIRED)
 
 set(PROJETC_TEST ${PROJECT_NAME}_test)
 
@@ -23,15 +24,23 @@ set_target_properties(${PROJETC_TEST} PROPERTIES
   COMPILE_OPTIONS -Wpedantic -Wall -Wextra
 )
 
+set_target_properties(${PROJETC_TEST} PROPERTIES
+  APPEND PROPERTY COMPILE_DEFINITIONS PROJECT_SOURCE_DIR="${PROJECT_SOURCE_DIR}"
+)
+
+
 target_include_directories(${PROJETC_TEST} PUBLIC
   ${GTEST_INCLUDE_DIRS}
+  ${OPENSSL_INCLUDE_DIR}
 )
 target_include_directories(${PROJETC_TEST} PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src
 )
 
-target_link_libraries(${PROJETC_TEST} Threads::Threads)
+target_link_libraries(${PROJETC_TEST}
+    Threads::Threads
+    OpenSSL::SSL)
 
 target_link_libraries(${PROJETC_TEST} 
   ${PROJECT_NAME}_lib 
