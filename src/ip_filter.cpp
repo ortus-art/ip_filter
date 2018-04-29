@@ -2,18 +2,7 @@
 
 #include <algorithm>
 #include <boost/lexical_cast.hpp>
-
-namespace {
-
-inline std::string &trim(std::string &s) {
-  auto is_char = [](int c) { return !std::isspace(c); };
-
-  s.erase(s.begin(), std::find_if(s.begin(), s.end(), is_char));
-  s.erase(std::find_if(s.rbegin(), s.rend(), is_char).base(), s.end());
-  return s;
-}
-
-} // anonymous namespace
+#include <boost/algorithm/string/trim.hpp>
 
 
 namespace ip_filter {
@@ -29,7 +18,7 @@ std::ostream& operator<<(std::ostream &stream, ip_filter::ip_octets & octets)
 }
 
 
-split_result split_line(string line, char delimiter) noexcept{
+split_result split_line(string line, char delimiter) {
   auto pos = line.find_first_of(delimiter);
   auto result = line.substr(0, pos);
   if(string::npos != pos)
@@ -41,7 +30,7 @@ split_result split_line(string line, char delimiter) noexcept{
       line.clear();
 
 
-  trim(result);
+  boost::trim(result);
   return std::make_tuple(result, line);
   //return result;
 }
@@ -90,9 +79,11 @@ void parse_and_print(istream &ins, ostream& outs, ostream &log)
 {
     auto vec = ip_filter::parse(ins, log);
     std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
-    auto pr = [&outs](ip_filter::ip_octets & value) { outs << value;};
+    auto end = std::unique(vec.begin(), vec.end());
+    vec.erase(end, vec.end());
+    for(auto & value: vec)
+        outs << value;
 
-    for_each (vec.begin(), vec.end(), pr);
 
 }
 

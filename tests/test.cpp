@@ -117,6 +117,29 @@ TEST(main_case, input_parse)
 
 }
 
+TEST(main_case, input_remove_duplicates)
+{
+    std::istringstream is(
+    "113.162.145.15\t111\t0\n"
+    "157.39.22.224\t5\t6\n"
+    "79.180.73.190\t2\t1\n"
+    "79.180.73.190\t2\t1\n"
+    "79.180.73.190\t2\t1\n"
+    "179.210.145.4\t22\t0\n"
+    "113.162.145.15\t111\t0\n");
+
+    std::ostringstream os;
+
+    ip_filter::parse_and_print(is, os, os);
+    ASSERT_EQ(os.str(),
+               "179.210.145.4\n"
+               "157.39.22.224\n"
+               "113.162.145.15\n"
+               "79.180.73.190\n"
+              );
+
+}
+
 TEST(main_case, input_bad)
 {
      std::istringstream is(

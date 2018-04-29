@@ -19,7 +19,7 @@ using octets_vector = vector<ip_octets>;
 
 std::ostream& operator<<(std::ostream &stream, ip_filter::ip_octets& octets);
 
-split_result split_line(string line, char delimiter = '\t') noexcept;
+split_result split_line(string line, char delimiter = '\t');
 
 ip_octets parse_ip(string value);
 

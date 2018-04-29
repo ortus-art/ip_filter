@@ -6,6 +6,12 @@ using namespace std;
 
 int main()
 {
-   ip_filter::parse_and_print(std::cin, std::cout, std::cerr);
+    try {
+        ip_filter::parse_and_print(std::cin, std::cout, std::cerr);
+    } catch (std::exception &e) {
+        std::cerr << e.what();
+        return 1;
+    }
+
     return 0;
 }
