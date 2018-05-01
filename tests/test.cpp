@@ -119,28 +119,6 @@ TEST(main_case, input_parse)
 
 }
 
-TEST(main_case, input_remove_duplicates)
-{
-    std::istringstream is(
-    "113.162.145.15\t111\t0\n"
-    "157.39.22.224\t5\t6\n"
-    "79.180.73.190\t2\t1\n"
-    "79.180.73.190\t2\t1\n"
-    "79.180.73.190\t2\t1\n"
-    "179.210.145.4\t22\t0\n"
-    "113.162.145.15\t111\t0\n");
-
-    std::ostringstream os;
-
-    ip_filter::parse_and_print(is, os, os);
-    ASSERT_EQ(os.str(),
-               "179.210.145.4\n"
-               "157.39.22.224\n"
-               "113.162.145.15\n"
-               "79.180.73.190\n"
-              );
-
-}
 
 TEST(main_case, input_bad)
 {
@@ -172,7 +150,10 @@ TEST(main_case, parse_and_print)
 
     std::ostringstream os;
 
-    ip_filter::parse_and_print(is, os, os);
+    auto vec = ip_filter::parse(is, os);
+    std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
+    ip_filter::print_octets(vec, os);
+
     ASSERT_EQ(os.str(),
                "179.210.145.4\n"
                "157.39.22.224\n"
@@ -182,24 +163,64 @@ TEST(main_case, parse_and_print)
 }
 
 #ifdef PROJECT_SOURCE_DIR
-TEST(main_case, input_test_file)
-{
-    std::ifstream file{PROJECT_SOURCE_DIR "/data/data.tsv"};
-    std::ostringstream os, os_result;
-    ip_filter::parse_and_print(file, os, os);
 
+std::string getMD5(const std::string & value)
+{
     unsigned char result[MD5_DIGEST_LENGTH];
-    auto out =  os.str();
-    MD5((const unsigned char*)out.c_str(), out.size(), result);
+    std::ostringstream os_result;
+    MD5((const unsigned char*)value.c_str(), value.size(), result);
 
     os_result<<std::hex<<std::setfill('0');
     for(long long c: result)
     {
         os_result<<std::setw(2)<<(long long)c;
     }
+    return os_result.str();
+}
 
-    ASSERT_EQ(os_result.str(),
-               "37a9ee52ffb12c9ffcc961fae39d12b3"
+TEST(main_case, input_test_file_unsorted)
+{
+    std::ifstream file{PROJECT_SOURCE_DIR "/data/data.tsv"};
+    std::ostringstream os;
+    auto vec = ip_filter::parse(file, os);
+    ip_filter::print_octets(vec, os);
+
+    auto md5 = getMD5(os.str());
+    ASSERT_EQ(md5,
+               "1186dd63f9630300053f496d2fc24b51"
+              );
+}
+
+
+TEST(main_case, input_test_file_sorted)
+{
+    std::ifstream file{PROJECT_SOURCE_DIR "/data/data.tsv"};
+    std::ostringstream os;
+    auto vec = ip_filter::parse(file, os);
+    std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
+    ip_filter::print_octets(vec, os);
+    auto md5 = getMD5(os.str());
+    ASSERT_EQ(md5,
+               "a0dc1897fc8cfd5bdfddc72bdb7ea3a4"
+              );
+}
+
+
+TEST(main_case, input_test_file_filtered)
+{
+    //This test matches the final project result
+    std::ifstream file{PROJECT_SOURCE_DIR "/data/data.tsv"};
+    std::ostringstream os;
+    auto vec = ip_filter::parse(file, os);
+    std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
+    ip_filter::print_octets(vec, os);
+    ip_filter::filter_and_print(vec, os, 1);
+    ip_filter::filter_and_print(vec, os, 46, 70);
+    ip_filter::filter_any_and_print(vec, os, 46);
+
+    auto md5 = getMD5(os.str());
+    ASSERT_EQ(md5,
+               "24e7a7b2270daee89c64d3ca5fb3da1a"
               );
 }
 #endif

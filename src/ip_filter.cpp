@@ -7,7 +7,7 @@
 
 namespace ip_filter {
 
-std::ostream& operator<<(std::ostream &stream, ip_filter::ip_octets & octets)
+std::ostream& operator<<(std::ostream &stream, const ip_filter::ip_octets & octets)
 {
     stream << static_cast<unsigned>(octets[0])
             << "." << static_cast<unsigned>(octets[1])
@@ -29,10 +29,8 @@ split_result split_line(string line, char delimiter) {
   else
       line.clear();
 
-
   boost::trim(result);
   return std::make_tuple(result, line);
-  //return result;
 }
 
 ip_octets parse_ip(string value)
@@ -43,7 +41,7 @@ ip_octets parse_ip(string value)
     std::tie(oct, value) = split_line(value, '.');
     try {
         while (i < 4 && !oct.empty()) {
-           octets[i++] = boost::numeric_cast<uint8_t>(boost::lexical_cast<short>(oct));
+           octets[i++] = boost::numeric_cast<ip_octet>(boost::lexical_cast<short>(oct));
            std::tie(oct, value) = split_line(value, '.');
         }
     } catch (boost::bad_lexical_cast) {
@@ -68,23 +66,8 @@ octets_vector parse(istream &stream, ostream &log) {
     } catch (parser_error &e) {
         log << "Error parsing line: " << value << ":" << e.what() << std::endl ;
     }
-
-    
-   
   }
   return result;
-}
-
-void parse_and_print(istream &ins, ostream& outs, ostream &log)
-{
-    auto vec = ip_filter::parse(ins, log);
-    std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
-    auto end = std::unique(vec.begin(), vec.end());
-    vec.erase(end, vec.end());
-    for(auto & value: vec)
-        outs << value;
-
-
 }
 
 } // namespace ip_filter
