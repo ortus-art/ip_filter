@@ -18,7 +18,7 @@ std::ostream& operator<<(std::ostream &stream, const ip_filter::ip_octets & octe
 }
 
 
-split_result split_line(string line, char delimiter) {
+split_result split_line(string line, const char delimiter) {
   auto pos = line.find_first_of(delimiter);
   auto result = line.substr(0, pos);
   if(string::npos != pos)

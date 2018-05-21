@@ -214,9 +214,9 @@ TEST(main_case, input_test_file_filtered)
     auto vec = ip_filter::parse(file, os);
     std::sort(vec.begin(), vec.end(), std::greater<ip_filter::ip_octets>());
     ip_filter::print_octets(vec, os);
-    ip_filter::filter_and_print(vec, os, 1);
-    ip_filter::filter_and_print(vec, os, 46, 70);
-    ip_filter::filter_any_and_print(vec, os, 46);
+    ip_filter::filter_by_address_and_print(vec, os, 1);
+    ip_filter::filter_by_address_and_print(vec, os, 46, 70);
+    ip_filter::filter_by_any_part_of_address_and_print(vec, os, 46);
 
     auto md5 = getMD5(os.str());
     ASSERT_EQ(md5,
